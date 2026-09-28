@@ -114,6 +114,7 @@
     position: relative;
     z-index: 1;
     width: min(920px, 100%);
+    height:200px;
     padding: clamp(22px, 3.4vw, 40px);
     border-radius: 20px;
     background: linear-gradient(180deg, rgba(255,255,255,.024), rgba(255,255,255,.007));
@@ -580,7 +581,7 @@
     </svg>
   </div>
 
-  <h1 id="heading">How much I miss you 🥹</h1>
+  <h1 id="heading">How much I miss you</h1>
   <p class="sub" id="subtitle">since May 30, 2026 at 1:45 PM</p>
 
   <!-- the honest numbers -->
@@ -685,4 +686,211 @@
       d.style.left = (Math.random() * 102 - 1).toFixed(2) + "vw";
       d.style.height = (9 + Math.random() * 11).toFixed(1) + "vh";
       d.style.animationDuration = (4.5 + Math.random() * 6).toFixed(2) + "s";
-      d.style.animationDelay = (-Math.random() * 14).toFixe
+      d.style.animationDelay = (-Math.random() * 14).toFixed(2) + "s";
+      d.style.opacity = (0.22 + Math.random() * 0.4).toFixed(2);
+      frag.appendChild(d);
+    }
+    layer.appendChild(frag);
+  })();
+
+  /* ---------- rising hearts ---------- */
+  (function makeRisingHearts() {
+    if (reduceMotion) return;
+    const layer = document.querySelector(".hearts");
+    if (!layer) return;
+    const count = window.innerWidth < 640 ? 16 : 30;
+    const frag = document.createDocumentFragment();
+    for (let i = 0; i < count; i++) {
+      const wrap = document.createElement("span");
+      wrap.className = "rise";
+      wrap.style.left = (Math.random() * 100).toFixed(2) + "vw";
+      wrap.style.setProperty("--size", (6 + Math.random() * 9).toFixed(1) + "px");
+      wrap.style.setProperty("--drift", (Math.random() * 12 - 6).toFixed(2) + "vw");
+      wrap.style.animationDuration = (16 + Math.random() * 18).toFixed(1) + "s";
+      wrap.style.animationDelay = (-Math.random() * 34).toFixed(1) + "s";
+      wrap.innerHTML = HEART_SVG;
+      frag.appendChild(wrap);
+    }
+    layer.appendChild(frag);
+  })();
+
+  /* ---------- the words that run off ---------- */
+  (function fillSoLines() {
+    const l1 = $("soLine1"), l2 = $("soLine2"), l3 = $("soLine3");
+    if (l1) l1.textContent = "i miss you so" + "o".repeat(420);
+    if (l2) l2.textContent = "o".repeat(340);
+    if (l3) l3.textContent = "o".repeat(280);
+  })();
+
+  /* ---------- elements ---------- */
+  const el = {
+    badge: $("badge"),
+    badgeText: $("badgeText"),
+    heading: $("heading"),
+    subtitle: $("subtitle"),
+    years: $("years"),
+    months: $("months"),
+    days: $("days"),
+    hours: $("hours"),
+    minutes: $("minutes"),
+    seconds: $("seconds"),
+    ms: $("ms"),
+    stats: $("stats"),
+    traveler: document.querySelector(".traveler"),
+    meter: $("meter"),
+    meterFill: $("meterFill"),
+    meterPct: $("meterPct"),
+    meterFoot: $("meterFoot")
+  };
+
+  /* ---------- totals ---------- */
+  const STAT_DEFS = [
+    ["m",  "Months apart"],
+    ["w",  "Weeks apart"],
+    ["d",  "Days apart"],
+    ["h",  "Hours apart"],
+    ["mi", "Minutes apart"],
+    ["s",  "Seconds apart"]
+  ];
+  const statEls = {};
+  for (const [key, label] of STAT_DEFS) {
+    const box = document.createElement("div");
+    box.className = "stat";
+    const val = document.createElement("span");
+    val.className = "sval";
+    val.textContent = "0";
+    const lab = document.createElement("span");
+    lab.className = "slabel";
+    lab.textContent = label;
+    box.append(val, lab);
+    el.stats.append(box);
+    statEls[key] = val;
+  }
+
+  /* ---------- helpers ---------- */
+  const pad = (n, len = 2) => String(n).padStart(len, "0");
+  const nf = (n) => Math.floor(n).toLocaleString();
+
+  function addMonths(date, n) {
+    const d = new Date(date.getTime());
+    const day = d.getDate();
+    d.setDate(1);
+    d.setMonth(d.getMonth() + n);
+    const daysInMonth = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+    d.setDate(Math.min(day, daysInMonth));
+    return d;
+  }
+
+  function diffParts(from, to) {
+    let months =
+      (to.getFullYear() - from.getFullYear()) * 12 +
+      (to.getMonth() - from.getMonth());
+    let anchor = addMonths(from, months);
+    if (anchor > to) {
+      months--;
+      anchor = addMonths(from, months);
+    }
+    const rest = to.getTime() - anchor.getTime();
+    return {
+      years: Math.floor(months / 12),
+      months: months % 12,
+      totalMonths: months,
+      days: Math.floor(rest / 86400000),
+      hours: Math.floor(rest / 3600000) % 24,
+      minutes: Math.floor(rest / 60000) % 60,
+      seconds: Math.floor(rest / 1000) % 60,
+      ms: Math.floor(rest % 1000)
+    };
+  }
+
+  /* ---------- the traveller slows as the days pile up ---------- */
+  (function setTravelerTempo() {
+    if (!el.traveler) return;
+    const days = Math.max(0, (Date.now() - TARGET.getTime()) / 86400000);
+    el.traveler.style.animationDuration = Math.min(6 + days / 18, 16).toFixed(2) + "s";
+  })();
+
+  /* ---------- meter fills, then refuses to stay inside ---------- */
+  let meterPrimed = false;
+  function updateMeter(totalMs, upcoming) {
+    if (upcoming) {
+      el.meter.classList.remove("overflowing");
+      el.meterFill.style.width = "0%";
+      el.meterPct.textContent = "–";
+      el.meterFoot.textContent = "the first second hasn't come yet.";
+      return;
+    }
+
+    // once the count starts, the meter goes all the way and spills.
+    if (!meterPrimed) {
+      meterPrimed = true;
+      requestAnimationFrame(() => {
+        el.meterFill.style.width = "100%";
+        setTimeout(() => el.meter.classList.add("overflowing"), 900);
+      });
+    }
+
+    el.meterPct.textContent = "∞";
+
+    const yearsApart = totalMs / (365.25 * 86400000);
+    if (yearsApart < 1) {
+      const months = (totalMs / (30.44 * 86400000)).toFixed(1);
+      el.meterFoot.textContent =
+        months + " months of missing — and it never fit on the scale.";
+    } else {
+      el.meterFoot.textContent =
+        yearsApart.toFixed(1) + " years of missing — and it still won't fit anywhere.";
+    }
+  }
+
+  /* ---------- render ---------- */
+  function render() {
+    const now = new Date();
+    const upcoming = TARGET.getTime() > now.getTime();
+
+    const from = upcoming ? now : TARGET;
+    const to   = upcoming ? TARGET : now;
+    const p = diffParts(from, to);
+    const totalMs = to.getTime() - from.getTime();
+
+    el.badge.classList.toggle("down", upcoming);
+    el.badgeText.textContent = upcoming ? "counting down" : "still missing you";
+    el.heading.textContent = upcoming
+      ? "How much I'll miss you"
+      : "How much I miss you";
+    el.subtitle.textContent = TARGET_LABEL;
+
+    el.years.textContent   = pad(p.years);
+    el.months.textContent  = pad(p.months);
+    el.days.textContent    = pad(p.days);
+    el.hours.textContent   = pad(p.hours);
+    el.minutes.textContent = pad(p.minutes);
+    el.seconds.textContent = pad(p.seconds);
+    el.ms.textContent      = pad(p.ms, 3);
+
+    statEls.m.textContent  = nf(p.totalMonths);
+    statEls.w.textContent  = nf(totalMs / 604800000);
+    statEls.d.textContent  = nf(totalMs / 86400000);
+    statEls.h.textContent  = nf(totalMs / 3600000);
+    statEls.mi.textContent = nf(totalMs / 60000);
+    statEls.s.textContent  = nf(totalMs / 1000);
+
+    updateMeter(totalMs, upcoming);
+  }
+
+  /* ---------- loop ---------- */
+  let last = 0;
+  function tick(ts) {
+    if (ts - last > 32) {
+      last = ts;
+      render();
+    }
+    requestAnimationFrame(tick);
+  }
+
+  render();
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>
