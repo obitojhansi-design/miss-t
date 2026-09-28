@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>I miss you — since May 10, 2026</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+
+  :root {
+    --ink:    #c3cad6;
+    --dim:    #737c8c;
+    --dimmer: #4b5361;
+    --line:   rgba(190, 205, 230, .07);
+    --heart:  #b9a7c9;
+    --violet: #c9a8d8;
+  }
+
+  body {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 26px 20px;
+    color: var(--ink);
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+    background:
+      radial-gradient(130% 100% at 50% -15%, #171a22 0%, #0b0d12 55%, #05060a 100%);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---- dim, failing lamp glow ---- */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: -25%;
+    z-index: -2;
+    background:
+      radial-gradient(circle at 50% 8%, rgba(120, 145, 190, .12), transparent 55%),
+      radial-gradient(circle at 15% 85%, rgba(70, 85, 120, .09), transparent 55%),
+      radial-gradient(circle at 85% 80%, rgba(60, 70, 100, .08), transparent 55%);
+    filter: blur(30px);
+    animation: flicker 11s ease-in-out infinite;
+  }
+  @keyframes flicker {
+    0%, 100% { opacity: .82; }
+    22%      { opacity: .56; }
+    26%      { opacity: .88; }
+    55%      { opacity: .64; }
+    58%      { opacity: .92; }
+    80%      { opacity: .60; }
+  }
+
+  /* ---- vignette ---- */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(120% 95% at 50% 45%, transparent 40%, rgba(0,0,0,.76) 100%);
+  }
+
+  /* ---- distant rain ---- */
+  .rain {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .rain i {
+    position: absolute;
+    top: -20vh;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, rgba(170, 190, 220, .16));
+    animation: fall linear infinite;
+  }
+  @keyframes fall {
+    from { transform: translateY(0); }
+    to   { transform: translateY(140vh); }
+  }
+
+  /* ---- rising hearts ---- */
+  .hearts {
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .rise {
+    position: absolute;
+    bottom: -10vh;
+    width: var(--size, 10px);
+    height: var(--size, 10px);
+    color: var(--heart);
+    opacity: 0;
+    animation: riseUp linear infinite;
+    will-change: transform, opacity;
+  }
+  .rise svg { width: 100%; height: 100%; fill: currentColor; display: block; }
+  @keyframes riseUp {
+    0%   { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 0; }
+    14%  { opacity: .38; }
+    80%  { opacity: .24; }
+    100% { transform: translate3d(var(--drift, 0), -125vh, 0) rotate(12deg); opacity: 0; }
+  }
+
+  /* ---- card ---- */
+  .card {
+    position: relative;
+    z-index: 1;
+    width: min(920px, 100%);
+    height: 200px;
+    padding: clamp(22px, 3.4vw, 40px);
+    border-radius: 20px;
+    background: linear-gradient(180deg, rgba(255,255,255,.024), rgba(255,255,255,.007));
+    border: 1px solid var(--line);
+    box-shadow:
+      0 40px 100px rgba(0, 0, 0, .72),
+      inset 0 1px 0 rgba(255, 255, 255, .035);
+    backdrop-filter: blur(14px) saturate(82%);
+    -webkit-backdrop-filter: blur(14px) saturate(82%);
+    animation: arrive 2.4s cubic-bezier(.2, .8, .3, 1) both;
+  }
+  @keyframes arrive {
+    from { opacity: 0; transform: translateY(14px); filter: blur(6px); }
+    to   { opacity: 1; transform: none; filter: blur(0); }
+  }
+
+  /* ---- badge ---- */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 13px 5px 11px;
+    border-radius: 999px;
+    font-size: .62rem;
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--dimmer);
+    background: rgba(255, 255, 255, .022);
+    border: 1px solid rgba(255, 255, 255, .055);
+  }
+  .badge .dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: #8f7fb0;
+    animation: sigh 5.5s ease-in-out infinite;
+  }
+  .badge.down .dot { background: #8a7d68; }
+  @keyframes sigh {
+    0%, 100% { opacity: .22; }
+    50%      { opacity: .78; }
+  }
+
+  /* ---- big heavy heart ---- */
+  .heart-stage {
+    display: flex;
+    justify-content: center;
+    margin: 24px 0 2px;
+    position: relative;
+  }
+  .heart-stage::after {
+    content: "";
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 140px; height: 140px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(180,150,215,.18), transparent 70%);
+    filter: blur(10px);
+    animation: glowBeat 2.4s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes glowBeat {
+    0%, 100% { opacity: .5;  transform: translate(-50%,-50%) scale(1); }
+    14%      { opacity: .9;  transform: translate(-50%,-50%) scale(1.1); }
+    28%      { opacity: .55; transform: translate(-50%,-50%) scale(1); }
+    42%      { opacity: .75; transform: translate(-50%,-50%) scale(1.05); }
+    56%      { opacity: .5;  transform: translate(-50%,-50%) scale(1); }
+  }
+  .big-heart {
+    position: relative;
+    z-index: 1;
+    width: 56px; height: 56px;
+    fill: #9c8cb6;
+    filter: drop-shadow(0 0 16px rgba(180,150,210,.35));
+    transform-origin: center;
+    animation: heartbeat 2.4s ease-in-out infinite;
+  }
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    14%      { transform: scale(1.09); }
+    28%      { transform: scale(1); }
+    42%      { transform: scale(1.045); }
+    56%      { transform: scale(1); }
+  }
+
+  /* ---- headings ---- */
+  h1 {
+    margin: 16px 0 6px;
+    text-align: center;
+    font-size: clamp(1.05rem, 2.6vw, 1.45rem);
+    font-weight: 400;
+    font-style: italic;
+    letter-spacing: .005em;
+    color: #aab3c2;
+  }
+  .sub {
+    margin: 0 0 24px;
+    text-align: center;
+    font-size: clamp(.76rem, 1.6vw, .88rem);
+    font-style: italic;
+    color: var(--dimmer);
+    letter-spacing: .03em;
+  }
+
+  /* ---- distance thread ---- */
+  .distance {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 2px 24px;
+  }
+  .end {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    flex: 0 0 auto;
+  }
+  .end .dot {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: #8b97ad;
+    box-shadow: 0 0 12px rgba(160,180,215,.4);
+  }
+  .end.you .dot {
+    background: #c0a8d6;
+    box-shadow: 0 0 16px rgba(200,170,220,.55);
+    animation: youPulse 4.2s ease-in-out infinite;
+  }
+  @keyframes youPulse {
+    0%, 100% { transform: scale(1);    opacity: .8; }
+    50%      { transform: scale(1.35); opacity: 1; }
+  }
+  .who {
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    font-size: .54rem;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: #4e5665;
+  }
+  .rail {
+    position: relative;
+    flex: 1;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(160,180,215,.28) 55%, transparent 0%);
+    background-size: 9px 1px;
+    background-repeat: repeat-x;
+  }
+  .traveler {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 12px; height: 12px;
+    margin-top: -6px;
+    margin-left: -6px;
+    color: var(--violet);
+    animation: travel 7s ease-in-out infinite;
+    filter: drop-shadow(0 0 6px rgba(200,170,220,.55));
+  }
+  .traveler svg { width: 100%; height: 100%; fill: currentColor; display: block; }
+  @keyframes travel {
+    0%   { left: 0%;   opacity: 0; transform: scale(.5); }
+    14%  { opacity: 1; transform: scale(1); }
+    82%  { opacity: 1; transform: scale(1); }
+    100% { left: 100%; opacity: 0; transform: scale(.5); }
+  }
+
+  /* ---- unit grid ---- */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 9px;
+  }
+  @media (max-width: 660px) {
+    .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  .unit {
+    padding: 16px 6px 11px;
+    text-align: center;
+    border-radius: 12px;
+    background: linear-gradient(180deg, rgba(255,255,255,.028), rgba(255,255,255,.005));
+    border: 1px solid rgba(255, 255, 255, .045);
+  }
+  .num {
+    font-size: clamp(1.35rem, 4.2vw, 2.1rem);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -.01em;
+    font-variant-numeric: tabular-nums;
+    background: linear-gradient(180deg, #b3bdcd, #57606f);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: breathe 9s ease-in-out infinite;
+  }
+  @keyframes breathe {
+    0%, 100% { opacity: .78; }
+    50%      { opacity: 1; }
+  }
+  .label {
+    margin-top: 10px;
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    font-size: .55rem;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: #4e5665;
+  }
+  .msrow {
+    margin-top: 16px;
+    text-align: center;
+    font-size: .72rem;
+    font-style: italic;
+    color: #4a5160;
+    font-variant-numeric: tabular-nums;
+  }
+  .msrow span { color: #6e7889; }
+
+  /* ============================================================
+     "I TRIED TO..." sections
+     ============================================================ */
+  .try-block {
+    margin-top: 30px;
+    padding-top: 22px;
+    border-top: 1px solid rgba(255, 255, 255, .04);
+  }
+  .try-label {
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    font-size: .56rem;
+    letter-spacing: .24em;
+    text-transform: uppercase;
+    color: #4a5260;
+    margin-bottom: 12px;
+  }
+
+  /* ---- words that run off the page ---- */
+  .so-line {
+    font-size: clamp(1.05rem, 3.4vw, 1.6rem);
+    font-style: italic;
+    line-height: 1.4;
+    color: #8d86a4;
+    white-space: nowrap;
+    overflow: hidden;
+    letter-spacing: .01em;
+    -webkit-mask-image: linear-gradient(to right, #000 0%, #000 52%, transparent 100%);
+    mask-image: linear-gradient(to right, #000 0%, #000 52%, transparent 100%);
+  }
+  .so-line + .so-line {
+    margin-top: 1px;
+    opacity: .55;
+    font-size: clamp(.95rem, 3vw, 1.4rem);
+  }
+  .so-line + .so-line + .so-line {
+    margin-top: 1px;
+    opacity: .3;
+    font-size: clamp(.85rem, 2.7vw, 1.25rem);
+  }
+  .so-note {
+    margin-top: 14px;
+    font-size: .72rem;
+    font-style: italic;
+    color: #4a5160;
+    letter-spacing: .02em;
+  }
+
+  /* ---- chart that leaves the chart ---- */
+  .chart-wrap {
+    position: relative;
+    height: 138px;
+    margin-top: 4px;
+    border: 1px solid rgba(255, 255, 255, .055);
+    border-radius: 11px;
+    background: rgba(255, 255, 255, .012);
+    overflow: hidden;
+  }
+  .chart {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .axis {
+    position: absolute;
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    font-size: .52rem;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: #3f4653;
+    pointer-events: none;
+  }
+  .axis.b { bottom: 7px; }
+  .axis.l { left: 10px; }
+  .axis.r { right: 10px; }
+  .axis.top {
+    top: 7px; right: 10px;
+    color: #6b6180;
+    letter-spacing: .14em;
+  }
+  .chart-note {
+    margin-top: 12px;
+    font-size: .72rem;
+    font-style: italic;
+    color: #4a5160;
+  }
+
+  /* ---- meter that overflows itself ---- */
+  .meter-rail {
+    position: relative;
+  }
+  .meter-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .meter-label {
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    font-size: .56rem;
+    letter-spacing: .24em;
+    text-transform: uppercase;
+    color: #4a5260;
+  }
+  .meter-pct {
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--violet);
+    font-style: italic;
+    text-shadow: 0 0 22px rgba(200, 170, 220, .5);
+    animation: breathe 5s ease-in-out infinite;
+  }
+  .meter-track {
+    position: relative;
+    height: 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .03);
+    border: 1px solid rgba(255, 255, 255, .055);
+    overflow: hidden;
+  }
+  .meter-fill {
+    position: absolute;
+    inset: 0;
+    width: 0%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #333c50, #6f6390, #c9a8d8);
+    box-shadow: 0 0 22px rgba(180, 150, 210, .4);
+    transition: width 1.6s cubic-bezier(.2, .8, .3, 1);
+  }
+  .meter-fill::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.3) 50%, transparent 70%);
+    background-size: 240% 100%;
+    animation: shimmer 4.5s linear infinite;
+  }
+  @keyframes shimmer {
+    from { background-position: 140% 0; }
+    to   { background-position: -140% 0; }
+  }
+
+  /* the spill — it will not stay inside the bar */
+  .meter-spill {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    height: 12px;
+    width: 0;
+    margin-left: -7px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(201,168,216,.9), rgba(201,168,216,.3) 55%, rgba(201,168,216,0));
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1s ease, width 1.4s cubic-bezier(.2,.8,.3,1);
+  }
+  .meter.overflowing .meter-spill {
+    width: 96px;
+    opacity: 1;
+    animation: spillPulse 3.4s ease-in-out infinite;
+  }
+  @keyframes spillPulse {
+    0%, 100% { opacity: .5; }
+    50%      { opacity: 1; }
+  }
+  .meter.overflowing .meter-track {
+    border-color: rgba(201, 168, 216, .28);
+    box-shadow: 0 0 26px rgba(180, 150, 210, .18);
+  }
+  .meter-foot {
+    margin-top: 11px;
+    font-size: .72rem;
+    font-style: italic;
+    color: #4a5160;
+  }
+
+  /* ---- totals ---- */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(98px, 1fr));
+    gap: 7px;
+    margin-top: 26px;
+  }
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 12px;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, .015);
+    border: 1px solid rgba(255, 255, 255, .04);
+  }
+  .sval {
+    font-size: .92rem;
+    color: #939dad;
+    font-variant-numeric: tabular-nums;
+  }
+  .slabel {
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    font-size: .55rem;
+    letter-spacing: .19em;
+    text-transform: uppercase;
+    color: #424a57;
+  }
+
+  /* ---- closing ---- */
+  .quote {
+    margin: 28px 0 0;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, .04);
+    text-align: center;
+    font-size: .8rem;
+    font-style: italic;
+    color: #555d6b;
+    letter-spacing: .02em;
+    line-height: 1.7;
+  }
+  .quote strong {
+    display: block;
+    font-weight: 400;
+    color: #7d7595;
+    margin-top: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    body::before, .rain i, .rise, .badge .dot, .num, .card,
+    .big-heart, .heart-stage::after, .traveler, .end.you .dot,
+    .meter-fill::after, .meter-pct, .meter-spill { animation: none !important; }
+    .card { opacity: 1; }
+    .hearts { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="rain" aria-hidden="true"></div>
+<div class="hearts" aria-hidden="true"></div>
+
+<main class="card">
+  <div class="badge" id="badge"><span class="dot"></span><span id="badgeText">still missing you</span></div>
+
+  <!-- heavy heart -->
+  <div class="heart-stage" aria-hidden="true">
+    <svg class="big-heart" viewBox="0 0 24 24">
+      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+    </svg>
+  </div>
+
+  <h1 id="heading">How much I miss you</h1>
+  <p class="sub" id="subtitle">since May 10, 2026 at 1:45 AM</p>
+
+  <!-- the honest numbers -->
+  <section class="grid">
+    <div class="unit"><div class="num" id="years">00</div><div class="label">Years</div></div>
+    <div class="unit"><div class="num" id="months">00</div><div class="label">Months</div></div>
+    <div class="unit"><div class="num" id="days">00</div><div class="label">Days</div></div>
+    <div class="unit"><div class="num" id="hours">00</div><div class="label">Hours</div></div>
+    <div class="unit"><div class="num" id="minutes">00</div><div class="label">Minutes</div></div>
+    <div class="unit"><div class="num" id="seconds">00</div><div class="label">Seconds</div></div>
+  </section>
+
+  <div class="msrow">and another <span id="ms">000</span> milliseconds without you</div>
+
+  <!-- 1. words fail -->
+  <section class="try-block">
+    <div class="try-label">i tried to write it</div>
+    <div class="so-line" id="soLine1"></div>
+    <div class="so-line" id="soLine2"></div>
+    <div class="so-line" id="soLine3"></div>
+    <div class="so-note">…and it keeps going. it doesn't stop.</div>
+  </section>
+
+  <!-- 2. the drawing fails -->
+  <section class="try-block">
+    <div class="try-label">i tried to draw it</div>
+    <div class="chart-wrap">
+      <svg class="chart" viewBox="0 0 400 138" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="chartLine" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0"   stop-color="#3d4658"/>
+            <stop offset="0.6" stop-color="#8a7aa8"/>
+            <stop offset="1"   stop-color="#c9a8d8"/>
+          </linearGradient>
+        </defs>
+        <g stroke="rgba(255,255,255,.045)" stroke-width="1">
+          <line x1="0" y1="34"  x2="400" y2="34"/>
+          <line x1="0" y1="68"  x2="400" y2="68"/>
+          <line x1="0" y1="102" x2="400" y2="102"/>
+        </g>
+        <polyline points="0,130 40,127 80,122 120,114 160,103 200,88 240,68 280,44 320,18 355,-4"
+                  fill="none" stroke="url(#chartLine)" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="0" cy="130" r="3" fill="#6d7a92"/>
+      </svg>
+      <span class="axis b l">then</span>
+      <span class="axis b r">now</span>
+      <span class="axis top">↗ off the chart</span>
+    </div>
+    <div class="chart-note">it left the chart somewhere around the middle.</div>
+  </section>
+
+  <!-- 3. measuring fails -->
+  <section class="try-block">
+    <div class="try-label">i tried to measure it</div>
+    <div class="meter" id="meter">
+      <div class="meter-head">
+        <span class="meter-label">missing meter</span>
+        <span class="meter-pct" id="meterPct">∞</span>
+      </div>
+      <div class="meter-rail">
+        <div class="meter-track">
+          <div class="meter-fill" id="meterFill"></div>
+        </div>
+        <div class="meter-spill"></div>
+      </div>
+      <div class="meter-foot" id="meterFoot">the scale ran out. so did the words.</div>
+    </div>
+  </section>
+
+  <section class="stats" id="stats"></section>
+
+  <p class="quote">
+    For my bestie.
+    <strong>I miss you more than this page can hold.</strong>
+  </p>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- locked: May 10, 2026 at 1:45 AM (local) ---------- */
+  const TARGET = new Date(2026, 4, 10, 1, 45, 0, 0);
+  const TARGET_LABEL = "May 10, 2026 at 1:45 AM";
+
+  const HEART_PATH = "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z";
+  const HEART_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + HEART_PATH + '"/></svg>';
+
+  const $ = (id) => document.getElementById(id);
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- rain ---------- */
+  (function makeRain() {
+    if (reduceMotion) return;
+    const layer = document.querySelector(".rain");
+    if (!layer) return;
+    const count = window.innerWidth < 640 ? 36 : 66;
+    const frag = document.createDocumentFragment();
+    for (let i = 0; i < count; i++) {
+      const d = document.createElement("i");
+      d.style.left = (Math.random() * 102 - 1).toFixed(2) + "vw";
+      d.style.height = (9 + Math.random() * 11).toFixed(1) + "vh";
+      d.style.animationDuration = (4.5 + Math.random() * 6).toFixed(2) + "s";
+      d.style.animationDelay = (-Math.random() * 14).toFixed(2) + "s";
+      d.style.opacity = (0.22 + Math.random() * 0.4).toFixed(2);
+      frag.appendChild(d);
+    }
+    layer.appendChild(frag);
+  })();
+
+  /* ---------- rising hearts ---------- */
+  (function makeRisingHearts() {
+    if (reduceMotion) return;
+    const layer = document.querySelector(".hearts");
+    if (!layer) return;
+    const count = window.innerWidth < 640 ? 16 : 30;
+    const frag = document.createDocumentFragment();
+    for (let i = 0; i < count; i++) {
+      const wrap = document.createElement("span");
+      wrap.className = "rise";
+      wrap.style.left = (Math.random() * 100).toFixed(2) + "vw";
+      wrap.style.setProperty("--size", (6 + Math.random() * 9).toFixed(1) + "px");
+      wrap.style.setProperty("--drift", (Math.random() * 12 - 6).toFixed(2) + "vw");
+      wrap.style.animationDuration = (16 + Math.random() * 18).toFixed(1) + "s";
+      wrap.style.animationDelay = (-Math.random() * 34).toFixed(1) + "s";
+      wrap.innerHTML = HEART_SVG;
+      frag.appendChild(wrap);
+    }
+    layer.appendChild(frag);
+  })();
+
+  /* ---------- the words that run off ---------- */
+  (function fillSoLines() {
+    const l1 = $("soLine1"), l2 = $("soLine2"), l3 = $("soLine3");
+    if (l1) l1.textContent = "i miss you so" + "o".repeat(420);
+    if (l2) l2.textContent = "o".repeat(340);
+    if (l3) l3.textContent = "o".repeat(280);
+  })();
+
+  /* ---------- elements ---------- */
+  const el = {
+    badge: $("badge"),
+    badgeText: $("badgeText"),
+    heading: $("heading"),
+    subtitle: $("subtitle"),
+    years: $("years"),
+    months: $("months"),
+    days: $("days"),
+    hours: $("hours"),
+    minutes: $("minutes"),
+    seconds: $("seconds"),
+    ms: $("ms"),
+    stats: $("stats"),
+    traveler: document.querySelector(".traveler"),
+    meter: $("meter"),
+    meterFill: $("meterFill"),
+    meterPct: $("meterPct"),
+    meterFoot: $("meterFoot")
+  };
+
+  /* ---------- totals ---------- */
+  const STAT_DEFS = [
+    ["m",  "Months apart"],
+    ["w",  "Weeks apart"],
+    ["d",  "Days apart"],
+    ["h",  "Hours apart"],
+    ["mi", "Minutes apart"],
+    ["s",  "Seconds apart"]
+  ];
+  const statEls = {};
+  for (const [key, label] of STAT_DEFS) {
+    const box = document.createElement("div");
+    box.className = "stat";
+    const val = document.createElement("span");
+    val.className = "sval";
+    val.textContent = "0";
+    const lab = document.createElement("span");
+    lab.className = "slabel";
+    lab.textContent = label;
+    box.append(val, lab);
+    el.stats.append(box);
+    statEls[key] = val;
+  }
+
+  /* ---------- helpers ---------- */
+  const pad = (n, len = 2) => String(n).padStart(len, "0");
+  const nf = (n) => Math.floor(n).toLocaleString();
+
+  function addMonths(date, n) {
+    const d = new Date(date.getTime());
+    const day = d.getDate();
+    d.setDate(1);
+    d.setMonth(d.getMonth() + n);
+    const daysInMonth = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+    d.setDate(Math.min(day, daysInMonth));
+    return d;
+  }
+
+  function diffParts(from, to) {
+    let months =
+      (to.getFullYear() - from.getFullYear()) * 12 +
+      (to.getMonth() - from.getMonth());
+    let anchor = addMonths(from, months);
+    if (anchor > to) {
+      months--;
+      anchor = addMonths(from, months);
+    }
+    const rest = to.getTime() - anchor.getTime();
+    return {
+      years: Math.floor(months / 12),
+      months: months % 12,
+      totalMonths: months,
+      days: Math.floor(rest / 86400000),
+      hours: Math.floor(rest / 3600000) % 24,
+      minutes: Math.floor(rest / 60000) % 60,
+      seconds: Math.floor(rest / 1000) % 60,
+      ms: Math.floor(rest % 1000)
+    };
+  }
+
+  /* ---------- the traveller slows as the days pile up ---------- */
+  (function setTravelerTempo() {
+    if (!el.traveler) return;
+    const days = Math.max(0, (Date.now() - TARGET.getTime()) / 86400000);
+    el.traveler.style.animationDuration = Math.min(6 + days / 18, 16).toFixed(2) + "s";
+  })();
+
+  /* ---------- meter fills, then refuses to stay inside ---------- */
+  let meterPrimed = false;
+  function updateMeter(totalMs, upcoming) {
+    if (upcoming) {
+      el.meter.classList.remove("overflowing");
+      el.meterFill.style.width = "0%";
+      el.meterPct.textContent = "–";
+      el.meterFoot.textContent = "the first second hasn't come yet.";
+      return;
+    }
+
+    // once the count starts, the meter goes all the way and spills.
+    if (!meterPrimed) {
+      meterPrimed = true;
+      requestAnimationFrame(() => {
+        el.meterFill.style.width = "100%";
+        setTimeout(() => el.meter.classList.add("overflowing"), 900);
+      });
+    }
+
+    el.meterPct.textContent = "∞";
+
+    const yearsApart = totalMs / (365.25 * 86400000);
+    if (yearsApart < 1) {
+      const months = (totalMs / (30.44 * 86400000)).toFixed(1);
+      el.meterFoot.textContent =
+        months + " months of missing — and it never fit on the scale.";
+    } else {
+      el.meterFoot.textContent =
+        yearsApart.toFixed(1) + " years of missing — and it still won't fit anywhere.";
+    }
+  }
+
+  /* ---------- render ---------- */
+  function render() {
+    const now = new Date();
+    const upcoming = TARGET.getTime() > now.getTime();
+
+    const from = upcoming ? now : TARGET;
+    const to   = upcoming ? TARGET : now;
+    const p = diffParts(from, to);
+    const totalMs = to.getTime() - from.getTime();
+
+    el.badge.classList.toggle("down", upcoming);
+    el.badgeText.textContent = upcoming ? "counting down" : "still missing you";
+    el.heading.textContent = upcoming
+      ? "How much I'll miss you"
+      : "How much I miss you";
+    el.subtitle.textContent = TARGET_LABEL;
+
+    el.years.textContent   = pad(p.years);
+    el.months.textContent  = pad(p.months);
+    el.days.textContent    = pad(p.days);
+    el.hours.textContent   = pad(p.hours);
+    el.minutes.textContent = pad(p.minutes);
+    el.seconds.textContent = pad(p.seconds);
+    el.ms.textContent      = pad(p.ms, 3);
+
+    statEls.m.textContent  = nf(p.totalMonths);
+    statEls.w.textContent  = nf(totalMs / 604800000);
+    statEls.d.textContent  = nf(totalMs / 86400000);
+    statEls.h.textContent  = nf(totalMs / 3600000);
+    statEls.mi.textContent = nf(totalMs / 60000);
+    statEls.s.textContent  = nf(totalMs / 1000);
+
+    updateMeter(totalMs, upcoming);
+  }
+
+  /* ---------- loop ---------- */
+  let last = 0;
+  function tick(ts) {
+    if (ts - last > 32) {
+      last = ts;
+      render();
+    }
+    requestAnimationFrame(tick);
+  }
+
+  render();
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>
